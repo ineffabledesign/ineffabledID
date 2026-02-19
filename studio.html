@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ineffable Design</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f7f5f0;
+  --white: #ffffff;
+  --ink: #0d0d0d;
+  --muted: #888580;
+  --line: #e2ded6;
+  --accent: #b8ff57;
+  --accent2: #ff85c8;
+  --accent3: #85c8ff;
+  --pill: #0d0d0d;
+  --r: 999px;
+}
+
+body {
+  font-family: 'Space Mono', monospace;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── GLITTER CURSOR ── */
+.cursor-dot {
+  position: fixed;
+  width: 8px; height: 8px;
+  background: var(--accent2);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s, height 0.2s;
+  mix-blend-mode: multiply;
+}
+.glitter-particle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  animation: glitterFade var(--dur) ease forwards;
+  font-size: var(--size);
+  color: var(--color);
+  filter: drop-shadow(0 0 3px var(--color));
+}
+@keyframes glitterFade {
+  0% { opacity: 1; transform: translate(-50%,-50%) scale(1) rotate(0deg); }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.1) rotate(var(--rot)); }
+}
+
+/* ── MOBILE LAYOUT ── */
+@media (max-width: 768px) {
+  body { cursor: auto; }
+  .cursor-dot { display: none; }
+  .studio {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    height: auto;
+    min-height: calc(100vh - 100px);
+  }
+  .panel {
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+    max-height: 220px;
+  }
+  .panel-right {
+    border-left: none;
+    border-top: 1px solid var(--line);
+  }
+  .canvas-area { padding: 20px 12px; }
+  .shirt-wrap { width: 260px; height: 320px; }
+  .drop-zone { top: 66px; left: 69px; width: 122px; height: 155px; }
+  .sticker-grid { grid-template-columns: repeat(5, 1fr); }
+}
+
+/* ── NOISE TEXTURE ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* ── HEADER ── */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 36px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(247,245,240,0.85);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+
+.logo-wrap { display: flex; flex-direction: column; gap: 1px; }
+
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+  text-transform: uppercase;
+}
+
+.logo-sub {
+  font-size: 0.55rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.header-pills { display: flex; gap: 8px; align-items: center; }
+
+.pill {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  padding: 8px 16px;
+  border-radius: var(--r);
+  cursor: pointer;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  transition: all 0.18s;
+  text-transform: uppercase;
+}
+.pill:hover { border-color: var(--ink); color: var(--ink); }
+
+.pill-dark {
+  background: var(--ink);
+  color: var(--accent);
+  border-color: var(--ink);
+}
+.pill-dark:hover { background: #222; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.18); }
+
+/* ── MARQUEE ── */
+.marquee-wrap {
+  background: var(--ink);
+  color: var(--accent);
+  font-family: 'Syne', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  overflow: hidden;
+  padding: 7px 0;
+  white-space: nowrap;
+}
+.marquee-inner {
+  display: inline-block;
+  animation: marquee 22s linear infinite;
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ── STUDIO LAYOUT ── */
+.studio {
+  display: grid;
+  grid-template-columns: 260px 1fr 270px;
+  height: calc(100vh - 100px);
+  position: relative;
+  z-index: 1;
+}
+
+/* ── SIDEBARS ── */
+.panel {
+  background: var(--white);
+  border-right: 1px solid var(--line);
+  overflow-y: auto;
+  padding: 24px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.panel-right { border-right: none; border-left: 1px solid var(--line); }
+
+.panel-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+/* ── SHIRT COLORS ── */
+.color-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.cswatch {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.15s;
+  position: relative;
+}
+.cswatch:hover { transform: scale(1.12); }
+.cswatch.active { border-color: var(--ink); box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--ink); }
+
+/* ── STICKER LIBRARY ── */
+.search-bar {
+  width: 100%;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.72rem;
+  padding: 9px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--bg);
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.search-bar:focus { border-color: var(--ink); }
+.search-bar::placeholder { color: var(--muted); }
+
+.cat-label {
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.sticker-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.sticker-tile {
+  aspect-ratio: 1;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  cursor: grab;
+  transition: all 0.15s;
+  user-select: none;
+  position: relative;
+  overflow: visible;
+}
+.sticker-tile:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: translateY(-2px) rotate(-4deg);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  z-index: 2;
+}
+.sticker-tile:active { cursor: grabbing; transform: scale(0.92); }
+
+/* ── CANVAS ── */
+.canvas-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background: var(--bg);
+  padding: 28px;
+  position: relative;
+}
+
+.canvas-tag {
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 5px 14px;
+}
+
+.shirt-wrap {
+  position: relative;
+  width: 320px;
+  height: 400px;
+  filter: drop-shadow(0 24px 48px rgba(0,0,0,0.10));
+}
+
+.shirt-svg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.drop-zone {
+  position: absolute;
+  top: 82px;
+  left: 85px;
+  width: 150px;
+  height: 190px;
+  z-index: 2;
+  overflow: visible;
+}
+
+.drop-border {
+  position: absolute;
+  inset: -4px;
+  border: 1.5px dashed rgba(180,170,160,0.3);
+  border-radius: 4px;
+  pointer-events: none;
+  transition: all 0.2s;
+}
+.drop-zone.over .drop-border {
+  border-color: var(--accent);
+  background: rgba(184,255,87,0.04);
+}
+
+/* ── PLACED STICKERS ── */
+.ps {
+  position: absolute;
+  cursor: move;
+  user-select: none;
+  font-size: 2rem;
+  line-height: 1;
+  transition: filter 0.15s;
+}
+.ps:hover { filter: drop-shadow(0 3px 10px rgba(0,0,0,0.2)); }
+.ps.sel {
+  outline: 1.5px dashed var(--accent2);
+  outline-offset: 5px;
+  border-radius: 4px;
+}
+
+.rh {
+  position: absolute;
+  bottom: -9px; right: -9px;
+  width: 18px; height: 18px;
+  background: var(--ink);
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  cursor: se-resize;
+  display: none;
+}
+.ps.sel .rh { display: block; }
+
+@keyframes popIn {
+  0% { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+  70% { transform: scale(1.1) rotate(2deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.ps { animation: popIn 0.25s cubic-bezier(0.34,1.56,0.64,1); }
+
+/* ── BOTTOM BAR ── */
+.canvas-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.bar-btn {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  border-radius: var(--r);
+  cursor: pointer;
+  border: 1px solid var(--line);
+  background: var(--white);
+  color: var(--muted);
+  transition: all 0.15s;
+}
+.bar-btn:hover { border-color: var(--ink); color: var(--ink); }
+.bar-btn.kill:hover { border-color: var(--accent2); color: var(--accent2); }
+
+/* ── RIGHT PANEL ── */
+.ctrl-group { display: flex; flex-direction: column; gap: 10px; }
+.ctrl-lbl {
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.slider-row { display: flex; align-items: center; gap: 10px; }
+input[type=range] {
+  -webkit-appearance: none;
+  flex: 1; height: 2px;
+  background: var(--line);
+  border-radius: 2px; outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--ink);
+  cursor: pointer;
+  border: 3px solid var(--accent);
+}
+.sval { font-size: 0.68rem; color: var(--muted); width: 28px; text-align: right; }
+
+/* ── LAYERS ── */
+.layer-list { display: flex; flex-direction: column; gap: 5px; }
+.layer-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 10px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 0.68rem;
+  cursor: pointer;
+  transition: all 0.13s;
+}
+.layer-row:hover { border-color: var(--accent2); }
+.layer-row.active { background: #fff0f8; border-color: var(--accent2); }
+.layer-emoji { font-size: 1rem; }
+.layer-nm { flex: 1; color: var(--muted); font-size: 0.62rem; }
+.layer-x { color: var(--line); font-size: 0.75rem; cursor: pointer; transition: color 0.13s; }
+.layer-x:hover { color: var(--accent2); }
+
+.no-layers {
+  font-size: 0.68rem;
+  color: var(--muted);
+  text-align: center;
+  padding: 18px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  line-height: 1.7;
+}
+
+/* ── SAVE MODAL ── */
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  background: rgba(13,13,13,0.55);
+  backdrop-filter: blur(6px);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.modal-bg.open { opacity: 1; pointer-events: all; }
+
+.modal {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 36px 32px;
+  width: 420px;
+  max-width: 90vw;
+  border: 1px solid var(--line);
+  transform: translateY(20px);
+  transition: transform 0.25s;
+  position: relative;
+}
+.modal-bg.open .modal { transform: translateY(0); }
+
+.modal-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 6px;
+}
+.modal-sub {
+  font-size: 0.68rem;
+  color: var(--muted);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.modal-input {
+  width: 100%;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.85rem;
+  padding: 13px 16px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--ink);
+  outline: none;
+  margin-bottom: 14px;
+  transition: border-color 0.15s;
+}
+.modal-input:focus { border-color: var(--ink); }
+
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+.modal-cancel { background: transparent; border: 1px solid var(--line); color: var(--muted); }
+.modal-save { background: var(--ink); color: var(--accent); border: 1px solid var(--ink); }
+
+.modal-note {
+  font-size: 0.6rem;
+  color: var(--muted);
+  margin-top: 14px;
+  padding: 10px 12px;
+  background: var(--bg);
+  border-radius: 8px;
+  line-height: 1.7;
+  border-left: 3px solid var(--accent);
+}
+
+/* ── SETUP BANNER ── */
+.setup-banner {
+  background: var(--ink);
+  color: var(--accent);
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  padding: 10px 36px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+.setup-banner a { color: var(--accent3); text-decoration: underline; cursor: pointer; }
+.setup-banner.hidden { display: none; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(16px);
+  background: var(--ink);
+  color: var(--accent);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  padding: 12px 22px;
+  border-radius: var(--r);
+  opacity: 0;
+  transition: all 0.3s;
+  pointer-events: none;
+  z-index: 900;
+  border: 1px solid #333;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<div class="cursor-dot" id="cursorDot"></div>
+
+<!-- SETUP BANNER -->
+<div class="setup-banner" id="setupBanner">
+  ⚙️ &nbsp;<strong>OWNER:</strong>&nbsp; Connect Supabase to receive customer designs → &nbsp;
+  <a onclick="showSetup()">click here to add your API key</a>
+  &nbsp;|&nbsp;
+  <a onclick="dismissBanner()">dismiss</a>
+</div>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <span class="marquee-inner">
+    ✦ ineffable design &nbsp;&nbsp; make it yours &nbsp;&nbsp; ✦ drag. drop. create. &nbsp;&nbsp; ✦ ineffable design &nbsp;&nbsp; make it yours &nbsp;&nbsp; ✦ drag. drop. create. &nbsp;&nbsp; ✦ ineffable design &nbsp;&nbsp; make it yours &nbsp;&nbsp; ✦ drag. drop. create. &nbsp;&nbsp; ✦ ineffable design &nbsp;&nbsp; make it yours &nbsp;&nbsp; ✦ drag. drop. create. &nbsp;&nbsp;
+  </span>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo-wrap">
+    <div class="logo">Ineffable Design</div>
+    <div class="logo-sub">custom shirt studio</div>
+  </div>
+  <div class="header-pills">
+    <button class="pill" onclick="clearAll()">clear ✕</button>
+    <button class="pill pill-dark" onclick="openSaveModal()">save design →</button>
+  </div>
+</header>
+
+<!-- STUDIO -->
+<div class="studio">
+
+  <!-- LEFT PANEL -->
+  <div class="panel">
+    <div class="panel-label">Shirt Color</div>
+    <div class="color-row" id="colorRow"></div>
+
+    <div class="panel-label">Sticker Library</div>
+    <input class="search-bar" type="text" placeholder="search..." oninput="filterStickers(this.value)" id="searchBar">
+    <div id="stickerLib"></div>
+  </div>
+
+  <!-- CANVAS -->
+  <div class="canvas-area">
+    <div class="canvas-tag">✦ drag or click stickers to place them</div>
+
+    <div class="shirt-wrap" id="shirtWrap">
+      <svg class="shirt-svg" viewBox="0 0 320 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="sf" x="-10%" y="-10%" width="120%" height="130%">
+            <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#000" flood-opacity="0.10"/>
+          </filter>
+        </defs>
+        <g filter="url(#sf)">
+          <path id="shirtBody" d="
+            M98,28 C94,28 74,22 56,42 L8,90 L52,124 L66,105 L66,355 L254,355 L254,105 L268,124 L312,90 L264,42 C246,22 226,28 222,28
+            C217,52 190,70 160,70 C130,70 103,52 98,28 Z
+          " fill="#f0ece4" stroke="#ddd9cf" stroke-width="1.2"/>
+          <path d="M98,28 C103,52 130,70 160,70 C190,70 217,52 222,28 C208,33 185,40 160,40 C135,40 112,33 98,28 Z" fill="rgba(0,0,0,0.045)"/>
+        </g>
+      </svg>
+
+      <div class="drop-zone" id="dropZone"
+        ondragover="onOver(event)"
+        ondragleave="onLeave(event)"
+        ondrop="onDrop(event)"
+        onclick="deselect()">
+        <div class="drop-border"></div>
+      </div>
+    </div>
+
+    <div class="canvas-bar">
+      <button class="bar-btn" onclick="bringFwd()">↑ forward</button>
+      <button class="bar-btn" onclick="sendBk()">↓ back</button>
+      <button class="bar-btn kill" onclick="delSel()">delete ✕</button>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="panel panel-right">
+    <div class="panel-label">Controls</div>
+
+    <div class="ctrl-group">
+      <span class="ctrl-lbl">Sticker Size</span>
+      <div class="slider-row">
+        <input type="range" min="16" max="110" value="56" id="szSlider" oninput="setSz(this.value)">
+        <span class="sval" id="szVal">56</span>
+      </div>
+    </div>
+
+    <div class="ctrl-group">
+      <span class="ctrl-lbl">Opacity</span>
+      <div class="slider-row">
+        <input type="range" min="10" max="100" value="100" id="opSlider" oninput="setOp(this.value)">
+        <span class="sval" id="opVal">100</span>
+      </div>
+    </div>
+
+    <div class="ctrl-group">
+      <span class="ctrl-lbl">Rotation</span>
+      <div class="slider-row">
+        <input type="range" min="-180" max="180" value="0" id="rotSlider" oninput="setRot(this.value)">
+        <span class="sval" id="rotVal">0°</span>
+      </div>
+    </div>
+
+    <div class="panel-label">Layers</div>
+    <div class="layer-list" id="layerList">
+      <div class="no-layers" id="emptyMsg">your stickers<br>will appear here ✦</div>
+    </div>
+  </div>
+</div>
+
+<!-- SAVE MODAL -->
+<div class="modal-bg" id="modalBg" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-title">Save your design ✦</div>
+    <div class="modal-sub">Give your design a name and it'll be sent straight to the shop owner. They'll reach out with your order details!</div>
+
+    <input class="modal-input" id="designName" type="text" placeholder="e.g. 'starcore-fit' or 'my custom one'" maxlength="60">
+    <input class="modal-input" id="customerName" type="text" placeholder="your name (optional)" maxlength="60">
+    <input class="modal-input" id="customerContact" type="text" placeholder="instagram / email so we can reach you" maxlength="100">
+
+    <div class="modal-actions">
+      <button class="pill modal-cancel" onclick="closeModal()">cancel</button>
+      <button class="pill modal-save" onclick="submitDesign()">send design →</button>
+    </div>
+
+    <div class="modal-note">
+      💌 your design data will be saved securely and only visible to the shop owner. no spam ever.
+    </div>
+  </div>
+</div>
+
+<!-- SETUP MODAL -->
+<div class="modal-bg" id="setupModalBg" onclick="closeSetupOutside(event)">
+  <div class="modal">
+    <div class="modal-title">Connect Supabase ⚙️</div>
+    <div class="modal-sub">
+      1. Go to <strong>supabase.com</strong> → create free project<br>
+      2. Create a table called <strong>designs</strong> with columns: id (int8 pk), name (text), customer_name (text), contact (text), stickers (jsonb), shirt_color (text), created_at (timestamptz default now())<br>
+      3. Copy your Project URL & anon key below
+    </div>
+    <input class="modal-input" id="sbUrl" type="text" placeholder="https://xxxx.supabase.co">
+    <input class="modal-input" id="sbKey" type="text" placeholder="your anon/public key">
+    <div class="modal-actions">
+      <button class="pill modal-cancel" onclick="closeSetup()">cancel</button>
+      <button class="pill modal-save" onclick="saveSupabase()">save & connect →</button>
+    </div>
+    <div class="modal-note">
+      🔒 These are saved only in your browser (localStorage). Share the final HTML file with your Supabase URL/key already filled in for your live site.
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── STICKERS ──────────────────────────────────────────────────
+const STICKERS = {
+  "✦ nature": [
+    {e:"🌸"},{e:"🌿"},{e:"🍄"},{e:"🌙"},{e:"⭐"},{e:"🌊"},
+    {e:"🪴"},{e:"🌺"},{e:"🍃"},{e:"🌻"},{e:"🪸"},{e:"🌾"}
+  ],
+  "✦ cosmos": [
+    {e:"🪐"},{e:"🌌"},{e:"☄️"},{e:"🌠"},{e:"🔭"},{e:"💫"},
+    {e:"✨"},{e:"🛸"},{e:"🌙"},{e:"⚡"},{e:"🪩"},{e:"🔮"}
+  ],
+  "✦ y2k": [
+    {e:"🦋"},{e:"🫧"},{e:"💿"},{e:"📟"},{e:"🎀"},{e:"🫦"},
+    {e:"👾"},{e:"🕹️"},{e:"💜"},{e:"🪬"},{e:"🌀"},{e:"⛓️"}
+  ],
+  "✦ art": [
+    {e:"🖋️"},{e:"🎨"},{e:"📷"},{e:"🪞"},{e:"🎭"},{e:"🩰"},
+    {e:"🧵"},{e:"🪡"},{e:"✏️"},{e:"🖼️"},{e:"🎬"},{e:"🎧"}
+  ]
+};
+
+const COLORS = [
+  {c:"#f0ece4",n:"Cream"},{c:"#1a1814",n:"Black"},{c:"#ffffff",n:"White"},
+  {c:"#b8d4e8",n:"Baby Blue"},{c:"#d4bce8",n:"Lavender"},{c:"#b8e4c8",n:"Sage"},
+  {c:"#e8b8c8",n:"Rose"},{c:"#e8dab8",n:"Sand"},{c:"#b8ff57",n:"Lime"},
+  {c:"#ffd166",n:"Butter"},{c:"#c0c0c0",n:"Silver"},{c:"#8b5e3c",n:"Mocha"}
+];
+
+// ── STATE ──────────────────────────────────────────────────────
+let placed = [];
+let selId = null;
+let dragEmoji = null;
+let idCnt = 0;
+let currentShirtColor = "#f0ece4";
+
+// ── SUPABASE ──────────────────────────────────────────────────
+let SB_URL = localStorage.getItem('sb_url') || '';
+let SB_KEY = localStorage.getItem('sb_key') || '';
+
+function showSetup() {
+  document.getElementById('sbUrl').value = SB_URL;
+  document.getElementById('sbKey').value = SB_KEY;
+  document.getElementById('setupModalBg').classList.add('open');
+}
+function closeSetup() { document.getElementById('setupModalBg').classList.remove('open'); }
+function closeSetupOutside(e) { if (e.target === document.getElementById('setupModalBg')) closeSetup(); }
+function saveSupabase() {
+  SB_URL = document.getElementById('sbUrl').value.trim().replace(/\/$/, '');
+  SB_KEY = document.getElementById('sbKey').value.trim();
+  localStorage.setItem('sb_url', SB_URL);
+  localStorage.setItem('sb_key', SB_KEY);
+  closeSetup();
+  dismissBanner();
+  toast('✦ Supabase connected! Designs will be saved.');
+}
+function dismissBanner() { document.getElementById('setupBanner').classList.add('hidden'); }
+
+// ── INIT ──────────────────────────────────────────────────────
+function init() {
+  renderColors();
+  renderStickers(STICKERS);
+  if (SB_URL && SB_KEY) dismissBanner();
+}
+
+function renderColors() {
+  const row = document.getElementById('colorRow');
+  row.innerHTML = '';
+  COLORS.forEach((c, i) => {
+    const el = document.createElement('div');
+    el.className = 'cswatch' + (i === 0 ? ' active' : '');
+    el.style.background = c.c;
+    el.style.border = c.c === '#ffffff' ? '2px solid #e0e0e0' : '2px solid transparent';
+    el.title = c.n;
+    el.onclick = () => {
+      document.querySelectorAll('.cswatch').forEach(s => s.classList.remove('active'));
+      el.classList.add('active');
+      currentShirtColor = c.c;
+      document.getElementById('shirtBody').setAttribute('fill', c.c);
+    };
+    row.appendChild(el);
+  });
+}
+
+function renderStickers(data) {
+  const lib = document.getElementById('stickerLib');
+  lib.innerHTML = '';
+  for (const [cat, items] of Object.entries(data)) {
+    const cl = document.createElement('div');
+    cl.className = 'cat-label';
+    cl.textContent = cat;
+    lib.appendChild(cl);
+    const grid = document.createElement('div');
+    grid.className = 'sticker-grid';
+    items.forEach(item => {
+      const el = document.createElement('div');
+      el.className = 'sticker-tile';
+      el.textContent = item.e;
+      el.draggable = true;
+      el.addEventListener('dragstart', e => { dragEmoji = item.e; e.dataTransfer.effectAllowed = 'copy'; });
+      el.addEventListener('click', () => addSticker(item.e));
+      addTouchDrag(el, item.e);
+      grid.appendChild(el);
+    });
+    lib.appendChild(grid);
+  }
+}
+
+function filterStickers(q) {
+  if (!q.trim()) { renderStickers(STICKERS); return; }
+  const lq = q.toLowerCase();
+  const out = {};
+  for (const [cat, items] of Object.entries(STICKERS)) {
+    const m = items.filter(i => i.e.includes(lq) || cat.includes(lq));
+    if (m.length) out[cat] = m;
+  }
+  if (!Object.keys(out).length) {
+    document.getElementById('stickerLib').innerHTML = '<div class="no-layers" style="margin-top:8px">no stickers found</div>';
+  } else renderStickers(out);
+}
+
+// ── DRAG & DROP ──────────────────────────────────────────────
+function onOver(e) { e.preventDefault(); e.currentTarget.classList.add('over'); }
+function onLeave(e) { e.currentTarget.classList.remove('over'); }
+function onDrop(e) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('over');
+  if (!dragEmoji) return;
+  const rect = document.getElementById('dropZone').getBoundingClientRect();
+  const x = e.clientX - rect.left - 18;
+  const y = e.clientY - rect.top - 18;
+  addSticker(dragEmoji, x, y);
+  dragEmoji = null;
+}
+
+// ── ADD STICKER ──────────────────────────────────────────────
+function addSticker(emoji, x, y) {
+  const zone = document.getElementById('dropZone');
+  const id = ++idCnt;
+  const cx = x !== undefined ? x : 30 + Math.random() * 80;
+  const cy = y !== undefined ? y : 30 + Math.random() * 100;
+
+  const el = document.createElement('div');
+  el.className = 'ps';
+  el.id = 'ps' + id;
+  el.textContent = emoji;
+  el.style.left = cx + 'px';
+  el.style.top  = cy + 'px';
+  el.style.fontSize = '2rem';
+
+  const rh = document.createElement('div');
+  rh.className = 'rh';
+  el.appendChild(rh);
+
+  makeDrag(el, zone);
+  makeDragTouch(el, zone);
+  makeResize(rh, el, id);
+  makeResizeTouch(rh, el, id);
+  el.addEventListener('click', e => { e.stopPropagation(); select(id); });
+
+  zone.appendChild(el);
+  placed.push({ id, emoji, el, size: 32, opacity: 100, rot: 0 });
+  select(id);
+  updateLayers();
+}
+
+function makeDrag(el, container) {
+  let ox, oy, ex, ey;
+  el.addEventListener('mousedown', e => {
+    if (e.target.classList.contains('rh')) return;
+    e.preventDefault();
+    ox = e.clientX; oy = e.clientY;
+    ex = parseFloat(el.style.left); ey = parseFloat(el.style.top);
+    const mv = e2 => {
+      el.style.left = (ex + e2.clientX - ox) + 'px';
+      el.style.top  = (ey + e2.clientY - oy) + 'px';
+    };
+    const up = () => { document.removeEventListener('mousemove', mv); document.removeEventListener('mouseup', up); };
+    document.addEventListener('mousemove', mv);
+    document.addEventListener('mouseup', up);
+  });
+}
+
+function makeResize(handle, el, id) {
+  handle.addEventListener('mousedown', e => {
+    e.stopPropagation(); e.preventDefault();
+    const sx = e.clientX;
+    const ss = parseFloat(el.style.fontSize);
+    const mv = e2 => {
+      const nz = Math.max(14, Math.min(100, ss + (e2.clientX - sx) * 0.5));
+      el.style.fontSize = nz + 'px';
+      const s = placed.find(p => p.id === id);
+      if (s) { s.size = nz; document.getElementById('szSlider').value = nz; document.getElementById('szVal').textContent = Math.round(nz); }
+    };
+    const up = () => { document.removeEventListener('mousemove', mv); document.removeEventListener('mouseup', up); };
+    document.addEventListener('mousemove', mv);
+    document.addEventListener('mouseup', up);
+  });
+}
+
+// ── SELECT ──────────────────────────────────────────────────
+function select(id) {
+  deselect(false);
+  selId = id;
+  const s = placed.find(p => p.id === id);
+  if (!s) return;
+  s.el.classList.add('sel');
+  document.getElementById('szSlider').value = s.size;
+  document.getElementById('szVal').textContent = Math.round(s.size);
+  document.getElementById('opSlider').value = s.opacity;
+  document.getElementById('opVal').textContent = s.opacity;
+  document.getElementById('rotSlider').value = s.rot;
+  document.getElementById('rotVal').textContent = s.rot + '°';
+  updateLayers();
+}
+
+function deselect(upd = true) {
+  document.querySelectorAll('.ps').forEach(e => e.classList.remove('sel'));
+  selId = null;
+  if (upd) updateLayers();
+}
+
+// ── CONTROLS ──────────────────────────────────────────────────
+function getSel() { return placed.find(p => p.id === selId); }
+
+function setSz(v) {
+  document.getElementById('szVal').textContent = v;
+  const s = getSel(); if (!s) return;
+  s.size = +v; s.el.style.fontSize = v + 'px';
+}
+function setOp(v) {
+  document.getElementById('opVal').textContent = v;
+  const s = getSel(); if (!s) return;
+  s.opacity = +v; s.el.style.opacity = v / 100;
+}
+function setRot(v) {
+  document.getElementById('rotVal').textContent = v + '°';
+  const s = getSel(); if (!s) return;
+  s.rot = +v; s.el.style.transform = `rotate(${v}deg)`;
+}
+
+function delSel() {
+  if (!selId) return;
+  const i = placed.findIndex(p => p.id === selId);
+  if (i < 0) return;
+  placed[i].el.remove();
+  placed.splice(i, 1);
+  selId = null;
+  updateLayers();
+}
+
+function bringFwd() {
+  const s = getSel(); if (!s) return;
+  s.el.style.zIndex = (parseInt(s.el.style.zIndex) || 1) + 1;
+}
+function sendBk() {
+  const s = getSel(); if (!s) return;
+  s.el.style.zIndex = Math.max(0, (parseInt(s.el.style.zIndex) || 1) - 1);
+}
+
+function clearAll() {
+  placed.forEach(s => s.el.remove());
+  placed = []; selId = null;
+  updateLayers();
+  toast('canvas cleared ✦');
+}
+
+// ── LAYERS ──────────────────────────────────────────────────
+function updateLayers() {
+  const list = document.getElementById('layerList');
+  const empty = document.getElementById('emptyMsg');
+  list.innerHTML = '';
+  if (!placed.length) { list.appendChild(empty); return; }
+  [...placed].reverse().forEach(s => {
+    const row = document.createElement('div');
+    row.className = 'layer-row' + (s.id === selId ? ' active' : '');
+    row.innerHTML = `<span class="layer-emoji">${s.emoji}</span><span class="layer-nm">#${s.id}</span><span class="layer-x" onclick="event.stopPropagation();rmLayer(${s.id})">✕</span>`;
+    row.onclick = () => select(s.id);
+    list.appendChild(row);
+  });
+}
+
+function rmLayer(id) {
+  const i = placed.findIndex(p => p.id === id);
+  if (i < 0) return;
+  placed[i].el.remove();
+  placed.splice(i, 1);
+  if (selId === id) selId = null;
+  updateLayers();
+}
+
+// ── SAVE MODAL ──────────────────────────────────────────────
+function openSaveModal() {
+  if (!placed.length) { toast('add some stickers first! ✦'); return; }
+  document.getElementById('modalBg').classList.add('open');
+}
+function closeModal() { document.getElementById('modalBg').classList.remove('open'); }
+function closeModalOutside(e) { if (e.target === document.getElementById('modalBg')) closeModal(); }
+
+async function submitDesign() {
+  const name = document.getElementById('designName').value.trim();
+  const cname = document.getElementById('customerName').value.trim();
+  const contact = document.getElementById('customerContact').value.trim();
+
+  if (!name) { toast('please name your design ✦'); return; }
+
+  const designData = {
+    name,
+    customer_name: cname || 'anonymous',
+    contact: contact || 'none provided',
+    shirt_color: currentShirtColor,
+    stickers: placed.map(s => ({
+      emoji: s.emoji,
+      left: s.el.style.left,
+      top: s.el.style.top,
+      size: s.size,
+      opacity: s.opacity,
+      rotation: s.rot,
+      zIndex: s.el.style.zIndex || 1
+    })),
+    created_at: new Date().toISOString()
+  };
+
+  if (SB_URL && SB_KEY) {
+    try {
+      const res = await fetch(`${SB_URL}/rest/v1/designs`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SB_KEY,
+          'Authorization': `Bearer ${SB_KEY}`,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(designData)
+      });
+      if (res.ok) {
+        closeModal();
+        toast('✦ design sent! the shop owner will contact you soon 💌');
+      } else {
+        const err = await res.text();
+        toast('error saving — check your Supabase setup');
+        console.error(err);
+      }
+    } catch(e) {
+      toast('connection error — check Supabase URL');
+      console.error(e);
+    }
+  } else {
+    // fallback: download JSON
+    const blob = new Blob([JSON.stringify(designData, null, 2)], {type: 'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = (name || 'design') + '.json';
+    a.click();
+    closeModal();
+    toast('✦ design saved as file! (connect Supabase for live orders)');
+  }
+}
+
+// ── TOAST ──────────────────────────────────────────────────
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+// ── GLITTER CURSOR ──────────────────────────────────────────
+const cursorDot = document.getElementById('cursorDot');
+const GLITTERS = ['✦','✧','⋆','★','·','✿','❋'];
+const GCOLORS = ['#ff85c8','#b8ff57','#85c8ff','#ffd166','#ffffff'];
+let lastGX = 0, lastGY = 0;
+
+document.addEventListener('mousemove', e => {
+  cursorDot.style.left = e.clientX + 'px';
+  cursorDot.style.top = e.clientY + 'px';
+  const dist = Math.hypot(e.clientX - lastGX, e.clientY - lastGY);
+  const count = Math.min(Math.floor(dist / 8), 4);
+  for (let i = 0; i < count; i++) {
+    spawnGlitter(
+      lastGX + (e.clientX - lastGX) * (i / Math.max(count,1)),
+      lastGY + (e.clientY - lastGY) * (i / Math.max(count,1))
+    );
+  }
+  lastGX = e.clientX; lastGY = e.clientY;
+});
+
+function spawnGlitter(x, y) {
+  const el = document.createElement('div');
+  el.className = 'glitter-particle';
+  const color = GCOLORS[Math.floor(Math.random() * GCOLORS.length)];
+  const dur = (0.4 + Math.random() * 0.5) + 's';
+  el.style.setProperty('--color', color);
+  el.style.setProperty('--size', (0.5 + Math.random() * 0.9) + 'rem');
+  el.style.setProperty('--dur', dur);
+  el.style.setProperty('--dx', (Math.random() - 0.5) * 36 + 'px');
+  el.style.setProperty('--dy', (Math.random() * 28 + 8) + 'px');
+  el.style.setProperty('--rot', (Math.random() * 360) + 'deg');
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  el.textContent = GLITTERS[Math.floor(Math.random() * GLITTERS.length)];
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), parseFloat(dur) * 1000);
+}
+
+// ── TOUCH SUPPORT ──────────────────────────────────────────
+function makeDragTouch(el, zone) {
+  el.addEventListener('touchstart', e => {
+    if (e.target.classList.contains('rh')) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    const ox = touch.clientX, oy = touch.clientY;
+    const ex = parseFloat(el.style.left), ey = parseFloat(el.style.top);
+    const mv = e2 => {
+      const t = e2.touches[0];
+      el.style.left = (ex + t.clientX - ox) + 'px';
+      el.style.top  = (ey + t.clientY - oy) + 'px';
+    };
+    const up = () => { document.removeEventListener('touchmove', mv); document.removeEventListener('touchend', up); };
+    document.addEventListener('touchmove', mv, { passive: false });
+    document.addEventListener('touchend', up);
+  }, { passive: false });
+}
+
+function makeResizeTouch(handle, el, id) {
+  handle.addEventListener('touchstart', e => {
+    e.stopPropagation(); e.preventDefault();
+    const sx = e.touches[0].clientX;
+    const ss = parseFloat(el.style.fontSize);
+    const mv = e2 => {
+      const nz = Math.max(14, Math.min(100, ss + (e2.touches[0].clientX - sx) * 0.5));
+      el.style.fontSize = nz + 'px';
+      const s = placed.find(p => p.id === id);
+      if (s) { s.size = nz; document.getElementById('szSlider').value = nz; document.getElementById('szVal').textContent = Math.round(nz); }
+    };
+    const up = () => { document.removeEventListener('touchmove', mv); document.removeEventListener('touchend', up); };
+    document.addEventListener('touchmove', mv, { passive: false });
+    document.addEventListener('touchend', up);
+  }, { passive: false });
+}
+
+// Touch drop on shirt zone
+document.getElementById('dropZone').addEventListener('touchend', e => {
+  if (!dragEmoji) return;
+  e.preventDefault();
+  const touch = e.changedTouches[0];
+  const rect = document.getElementById('dropZone').getBoundingClientRect();
+  const x = touch.clientX - rect.left - 18;
+  const y = touch.clientY - rect.top - 18;
+  addSticker(dragEmoji, x, y);
+  dragEmoji = null;
+}, { passive: false });
+
+// Touch drag from sticker library
+function addTouchDrag(tileEl, emoji) {
+  tileEl.addEventListener('touchstart', e => {
+    dragEmoji = emoji;
+  }, { passive: true });
+}
+
+init();
+</script>
+</body>
+</html>
