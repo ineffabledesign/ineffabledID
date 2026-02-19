@@ -27,6 +27,59 @@ body {
   color: var(--ink);
   min-height: 100vh;
   overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── GLITTER CURSOR ── */
+.cursor-dot {
+  position: fixed;
+  width: 8px; height: 8px;
+  background: var(--accent2);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s, height 0.2s;
+  mix-blend-mode: multiply;
+}
+.glitter-particle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  animation: glitterFade var(--dur) ease forwards;
+  font-size: var(--size);
+  color: var(--color);
+  filter: drop-shadow(0 0 3px var(--color));
+}
+@keyframes glitterFade {
+  0% { opacity: 1; transform: translate(-50%,-50%) scale(1) rotate(0deg); }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.1) rotate(var(--rot)); }
+}
+
+/* ── MOBILE LAYOUT ── */
+@media (max-width: 768px) {
+  body { cursor: auto; }
+  .cursor-dot { display: none; }
+  .studio {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    height: auto;
+    min-height: calc(100vh - 100px);
+  }
+  .panel {
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+    max-height: 220px;
+  }
+  .panel-right {
+    border-left: none;
+    border-top: 1px solid var(--line);
+  }
+  .canvas-area { padding: 20px 12px; }
+  .shirt-wrap { width: 260px; height: 320px; }
+  .drop-zone { top: 66px; left: 69px; width: 122px; height: 155px; }
+  .sticker-grid { grid-template-columns: repeat(5, 1fr); }
 }
 
 /* ── NOISE TEXTURE ── */
@@ -513,6 +566,8 @@ input[type=range]::-webkit-slider-thumb {
 </head>
 <body>
 
+<div class="cursor-dot" id="cursorDot"></div>
+
 <!-- SETUP BANNER -->
 <div class="setup-banner" id="setupBanner">
   ⚙️ &nbsp;<strong>OWNER:</strong>&nbsp; Connect Supabase to receive customer designs → &nbsp;
@@ -768,6 +823,7 @@ function renderStickers(data) {
       el.draggable = true;
       el.addEventListener('dragstart', e => { dragEmoji = item.e; e.dataTransfer.effectAllowed = 'copy'; });
       el.addEventListener('click', () => addSticker(item.e));
+      addTouchDrag(el, item.e);
       grid.appendChild(el);
     });
     lib.appendChild(grid);
@@ -821,7 +877,9 @@ function addSticker(emoji, x, y) {
   el.appendChild(rh);
 
   makeDrag(el, zone);
+  makeDragTouch(el, zone);
   makeResize(rh, el, id);
+  makeResizeTouch(rh, el, id);
   el.addEventListener('click', e => { e.stopPropagation(); select(id); });
 
   zone.appendChild(el);
@@ -1029,6 +1087,99 @@ function toast(msg) {
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+// ── GLITTER CURSOR ──────────────────────────────────────────
+const cursorDot = document.getElementById('cursorDot');
+const GLITTERS = ['✦','✧','⋆','★','·','✿','❋'];
+const GCOLORS = ['#ff85c8','#b8ff57','#85c8ff','#ffd166','#ffffff'];
+let lastGX = 0, lastGY = 0;
+
+document.addEventListener('mousemove', e => {
+  cursorDot.style.left = e.clientX + 'px';
+  cursorDot.style.top = e.clientY + 'px';
+  const dist = Math.hypot(e.clientX - lastGX, e.clientY - lastGY);
+  const count = Math.min(Math.floor(dist / 8), 4);
+  for (let i = 0; i < count; i++) {
+    spawnGlitter(
+      lastGX + (e.clientX - lastGX) * (i / Math.max(count,1)),
+      lastGY + (e.clientY - lastGY) * (i / Math.max(count,1))
+    );
+  }
+  lastGX = e.clientX; lastGY = e.clientY;
+});
+
+function spawnGlitter(x, y) {
+  const el = document.createElement('div');
+  el.className = 'glitter-particle';
+  const color = GCOLORS[Math.floor(Math.random() * GCOLORS.length)];
+  const dur = (0.4 + Math.random() * 0.5) + 's';
+  el.style.setProperty('--color', color);
+  el.style.setProperty('--size', (0.5 + Math.random() * 0.9) + 'rem');
+  el.style.setProperty('--dur', dur);
+  el.style.setProperty('--dx', (Math.random() - 0.5) * 36 + 'px');
+  el.style.setProperty('--dy', (Math.random() * 28 + 8) + 'px');
+  el.style.setProperty('--rot', (Math.random() * 360) + 'deg');
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  el.textContent = GLITTERS[Math.floor(Math.random() * GLITTERS.length)];
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), parseFloat(dur) * 1000);
+}
+
+// ── TOUCH SUPPORT ──────────────────────────────────────────
+function makeDragTouch(el, zone) {
+  el.addEventListener('touchstart', e => {
+    if (e.target.classList.contains('rh')) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    const ox = touch.clientX, oy = touch.clientY;
+    const ex = parseFloat(el.style.left), ey = parseFloat(el.style.top);
+    const mv = e2 => {
+      const t = e2.touches[0];
+      el.style.left = (ex + t.clientX - ox) + 'px';
+      el.style.top  = (ey + t.clientY - oy) + 'px';
+    };
+    const up = () => { document.removeEventListener('touchmove', mv); document.removeEventListener('touchend', up); };
+    document.addEventListener('touchmove', mv, { passive: false });
+    document.addEventListener('touchend', up);
+  }, { passive: false });
+}
+
+function makeResizeTouch(handle, el, id) {
+  handle.addEventListener('touchstart', e => {
+    e.stopPropagation(); e.preventDefault();
+    const sx = e.touches[0].clientX;
+    const ss = parseFloat(el.style.fontSize);
+    const mv = e2 => {
+      const nz = Math.max(14, Math.min(100, ss + (e2.touches[0].clientX - sx) * 0.5));
+      el.style.fontSize = nz + 'px';
+      const s = placed.find(p => p.id === id);
+      if (s) { s.size = nz; document.getElementById('szSlider').value = nz; document.getElementById('szVal').textContent = Math.round(nz); }
+    };
+    const up = () => { document.removeEventListener('touchmove', mv); document.removeEventListener('touchend', up); };
+    document.addEventListener('touchmove', mv, { passive: false });
+    document.addEventListener('touchend', up);
+  }, { passive: false });
+}
+
+// Touch drop on shirt zone
+document.getElementById('dropZone').addEventListener('touchend', e => {
+  if (!dragEmoji) return;
+  e.preventDefault();
+  const touch = e.changedTouches[0];
+  const rect = document.getElementById('dropZone').getBoundingClientRect();
+  const x = touch.clientX - rect.left - 18;
+  const y = touch.clientY - rect.top - 18;
+  addSticker(dragEmoji, x, y);
+  dragEmoji = null;
+}, { passive: false });
+
+// Touch drag from sticker library
+function addTouchDrag(tileEl, emoji) {
+  tileEl.addEventListener('touchstart', e => {
+    dragEmoji = emoji;
+  }, { passive: true });
 }
 
 init();

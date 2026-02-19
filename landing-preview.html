@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ineffable Design</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0a0a0a;
+  --white: #f7f5f0;
+  --muted: #555;
+  --line: #1e1e1e;
+  --pink: #ff85c8;
+  --lime: #b8ff57;
+  --blue: #85c8ff;
+  --r: 999px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: 'Space Mono', monospace;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* CUSTOM CURSOR */
+.cursor {
+  position: fixed;
+  width: 12px; height: 12px;
+  background: var(--pink);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s, width 0.2s, height 0.2s;
+  mix-blend-mode: difference;
+}
+.cursor-star {
+  position: fixed;
+  font-size: 1.2rem;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: left 0.08s, top 0.08s;
+  opacity: 0.7;
+}
+
+/* NOISE */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.3;
+}
+
+/* BLOBS */
+.blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.12;
+}
+.blob1 { width: 500px; height: 500px; background: var(--pink); top: -100px; right: -100px; animation: blobFloat 8s ease-in-out infinite; }
+.blob2 { width: 400px; height: 400px; background: var(--lime); bottom: 100px; left: -100px; animation: blobFloat 10s ease-in-out infinite reverse; }
+.blob3 { width: 300px; height: 300px; background: var(--blue); top: 50%; left: 50%; animation: blobFloat 12s ease-in-out infinite 2s; }
+
+@keyframes blobFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -30px) scale(1.05); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 48px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(10,10,10,0.8);
+  backdrop-filter: blur(16px);
+}
+
+.nav-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 0.08em;
+  background: linear-gradient(135deg, var(--pink), var(--lime));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
+.nav-links a {
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--white); }
+
+.nav-cta {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 22px;
+  border-radius: var(--r);
+  background: var(--pink);
+  color: var(--bg);
+  border: none;
+  cursor: none;
+  transition: all 0.2s;
+  font-weight: 700;
+}
+.nav-cta:hover { background: var(--lime); transform: translateY(-2px); }
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 48px 80px;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-tag {
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pink);
+  border: 1px solid var(--pink);
+  padding: 6px 16px;
+  border-radius: var(--r);
+  margin-bottom: 32px;
+  display: inline-block;
+  animation: fadeUp 0.8s ease both;
+}
+
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(4rem, 12vw, 10rem);
+  letter-spacing: 0.02em;
+  line-height: 0.9;
+  margin-bottom: 24px;
+  animation: fadeUp 0.8s ease 0.1s both;
+}
+
+.hero-title .pink { color: var(--pink); }
+.hero-title .lime { color: var(--lime); }
+
+.hero-sub {
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.8;
+  max-width: 420px;
+  margin: 0 auto 48px;
+  animation: fadeUp 0.8s ease 0.2s both;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300;
+}
+
+.hero-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  animation: fadeUp 0.8s ease 0.3s both;
+}
+
+.btn-primary {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 14px 32px;
+  border-radius: var(--r);
+  background: var(--pink);
+  color: var(--bg);
+  border: none;
+  cursor: none;
+  transition: all 0.2s;
+  font-weight: 700;
+}
+.btn-primary:hover { background: var(--lime); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(184,255,87,0.2); }
+
+.btn-secondary {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 14px 32px;
+  border-radius: var(--r);
+  background: transparent;
+  color: var(--white);
+  border: 1px solid var(--line);
+  cursor: none;
+  transition: all 0.2s;
+}
+.btn-secondary:hover { border-color: var(--white); }
+
+/* FLOATING STICKERS */
+.float-stickers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.fs {
+  position: absolute;
+  font-size: 2rem;
+  animation: floatAround linear infinite;
+  opacity: 0.4;
+}
+
+@keyframes floatAround {
+  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.4; }
+  90% { opacity: 0.4; }
+  100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+}
+
+/* MARQUEE */
+.marquee-section {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+  padding: 14px 0;
+  position: relative;
+  z-index: 1;
+}
+.marquee-inner {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 20s linear infinite;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+}
+.marquee-inner .pink { color: var(--pink); }
+.marquee-inner .lime { color: var(--lime); }
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* HOW IT WORKS */
+.section {
+  padding: 100px 48px;
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.section-tag {
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--lime);
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  margin-bottom: 56px;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.step {
+  background: var(--line);
+  border: 1px solid #2a2a2a;
+  border-radius: 16px;
+  padding: 32px 28px;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.step::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent, rgba(255,133,200,0.04));
+  pointer-events: none;
+}
+.step:hover { border-color: var(--pink); transform: translateY(-4px); }
+
+.step-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3.5rem;
+  color: var(--pink);
+  opacity: 0.3;
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.step-icon { font-size: 2rem; margin-bottom: 14px; }
+
+.step-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+}
+
+.step-desc {
+  font-size: 0.68rem;
+  color: var(--muted);
+  line-height: 1.7;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300;
+}
+
+/* CATEGORIES */
+.cats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.cat-card {
+  aspect-ratio: 3/4;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  cursor: none;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+  background: var(--line);
+}
+
+.cat-card:nth-child(1) { background: linear-gradient(135deg, #1a0a12, #2a1020); }
+.cat-card:nth-child(2) { background: linear-gradient(135deg, #0a1a0a, #102010); }
+.cat-card:nth-child(3) { background: linear-gradient(135deg, #0a0a1a, #101020); }
+.cat-card:nth-child(4) { background: linear-gradient(135deg, #1a1a0a, #202010); }
+
+.cat-card:hover { transform: translateY(-6px); border-color: var(--pink); }
+.cat-card:hover .cat-emoji { transform: scale(1.2) rotate(-8deg); }
+
+.cat-emoji { font-size: 3rem; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+
+.cat-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.08em;
+  color: var(--white);
+}
+
+.cat-count {
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* CTA SECTION */
+.cta-section {
+  margin: 0 48px 100px;
+  background: linear-gradient(135deg, #1a0a12, #0a1200, #0a0a1a);
+  border: 1px solid #2a2a2a;
+  border-radius: 24px;
+  padding: 80px 48px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.cta-section::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(ellipse at center, rgba(255,133,200,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.cta-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.cta-sub {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-bottom: 36px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300;
+}
+
+/* FOOTER */
+footer {
+  border-top: 1px solid var(--line);
+  padding: 28px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+}
+
+.footer-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.08em;
+  background: linear-gradient(135deg, var(--pink), var(--lime));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.footer-text { font-size: 0.6rem; color: var(--muted); letter-spacing: 0.08em; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  nav { padding: 16px 24px; }
+  .nav-links { display: none; }
+  .hero { padding: 100px 24px 60px; }
+  .steps { grid-template-columns: 1fr; }
+  .cats { grid-template-columns: repeat(2, 1fr); }
+  .section { padding: 60px 24px; }
+  .cta-section { margin: 0 24px 60px; padding: 48px 24px; }
+  footer { padding: 20px 24px; flex-direction: column; gap: 8px; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-star" id="cursorStar">✦</div>
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+
+<!-- FLOATING STICKERS -->
+<div class="float-stickers">
+  <div class="fs" style="left:5%;animation-duration:12s;animation-delay:0s;font-size:1.5rem;">🌸</div>
+  <div class="fs" style="left:15%;animation-duration:15s;animation-delay:2s;">🦋</div>
+  <div class="fs" style="left:25%;animation-duration:11s;animation-delay:4s;font-size:1.2rem;">✨</div>
+  <div class="fs" style="left:40%;animation-duration:14s;animation-delay:1s;">🪐</div>
+  <div class="fs" style="left:55%;animation-duration:13s;animation-delay:3s;font-size:1.5rem;">🎀</div>
+  <div class="fs" style="left:68%;animation-duration:16s;animation-delay:0.5s;">💿</div>
+  <div class="fs" style="left:78%;animation-duration:11s;animation-delay:5s;font-size:1.2rem;">🌙</div>
+  <div class="fs" style="left:88%;animation-duration:14s;animation-delay:2.5s;">⭐</div>
+  <div class="fs" style="left:95%;animation-duration:12s;animation-delay:1.5s;font-size:1.5rem;">🫧</div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Ineffable Design</div>
+  <ul class="nav-links">
+    <li><a href="#">shop</a></li>
+    <li><a href="#">design</a></li>
+    <li><a href="#">about</a></li>
+  </ul>
+  <button class="nav-cta">design now →</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag">✦ custom shirts, your way ✦</div>
+  <h1 class="hero-title">
+    <span class="pink">WEAR</span><br>
+    YOUR<br>
+    <span class="lime">VIBE</span>
+  </h1>
+  <p class="hero-sub">drag. drop. create. your custom shirt, designed entirely by you — made with love 🖤</p>
+  <div class="hero-btns">
+    <button class="btn-primary">start designing →</button>
+    <button class="btn-secondary">see designs ↓</button>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+  <div class="marquee-inner">
+    <span class="pink">✦ ineffable design &nbsp;&nbsp;</span> wear your vibe &nbsp;&nbsp; <span class="lime">✦ custom shirts &nbsp;&nbsp;</span> drag drop create &nbsp;&nbsp; <span class="pink">✦ ineffable design &nbsp;&nbsp;</span> wear your vibe &nbsp;&nbsp; <span class="lime">✦ custom shirts &nbsp;&nbsp;</span> drag drop create &nbsp;&nbsp; <span class="pink">✦ ineffable design &nbsp;&nbsp;</span> wear your vibe &nbsp;&nbsp; <span class="lime">✦ custom shirts &nbsp;&nbsp;</span> drag drop create &nbsp;&nbsp;
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="section">
+  <div class="section-tag">✦ how it works</div>
+  <div class="section-title">THREE STEPS.<br>ONE PERFECT SHIRT.</div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-icon">🎨</div>
+      <div class="step-title">Pick your stickers</div>
+      <div class="step-desc">browse our sticker library — quotes, icons, illustrations and more. all designed exclusively for ineffable.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-icon">✦</div>
+      <div class="step-title">Design your shirt</div>
+      <div class="step-desc">drag, drop, resize, rotate. place your stickers exactly where you want them. pick your shirt color too!</div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-icon">💌</div>
+      <div class="step-title">Send your order</div>
+      <div class="step-desc">save your design with your name and contact. we'll reach out personally with pricing and delivery details!</div>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<div class="section" style="padding-top:0">
+  <div class="section-tag">✦ sticker categories</div>
+  <div class="section-title">FIND YOUR<br><span style="color:var(--pink)">AESTHETIC.</span></div>
+  <div class="cats">
+    <div class="cat-card">
+      <div class="cat-emoji">🌸</div>
+      <div class="cat-name">Soft Girl</div>
+      <div class="cat-count">12 stickers</div>
+    </div>
+    <div class="cat-card">
+      <div class="cat-emoji">🌙</div>
+      <div class="cat-name">Dark Idol</div>
+      <div class="cat-count">12 stickers</div>
+    </div>
+    <div class="cat-card">
+      <div class="cat-emoji">💿</div>
+      <div class="cat-name">Y2K Era</div>
+      <div class="cat-count">12 stickers</div>
+    </div>
+    <div class="cat-card">
+      <div class="cat-emoji">✨</div>
+      <div class="cat-name">Idol Quotes</div>
+      <div class="cat-count">12 stickers</div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="cta-title">READY TO<br><span style="color:var(--pink)">CREATE?</span></div>
+  <div class="cta-sub">your dream shirt is literally one drag and drop away ✦</div>
+  <button class="btn-primary" style="font-size:0.8rem;padding:16px 40px;">start designing now →</button>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Ineffable Design</div>
+  <div class="footer-text">made with 🖤 · custom shirts</div>
+</footer>
+
+<script>
+// Custom cursor
+const cursor = document.getElementById('cursor');
+const cursorStar = document.getElementById('cursorStar');
+
+const GLITTERS = ['✦','✧','⋆','★','·','✿','❋','◆'];
+const GCOLORS = ['#ff85c8','#b8ff57','#85c8ff','#ffd166','#ffffff'];
+let lastGX = 0, lastGY = 0;
+
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+  setTimeout(() => {
+    cursorStar.style.left = e.clientX + 'px';
+    cursorStar.style.top = e.clientY + 'px';
+  }, 80);
+
+  const dist = Math.hypot(e.clientX - lastGX, e.clientY - lastGY);
+  const count = Math.min(Math.floor(dist / 7), 5);
+  for (let i = 0; i < count; i++) {
+    spawnGlitter(
+      lastGX + (e.clientX - lastGX) * (i / Math.max(count,1)),
+      lastGY + (e.clientY - lastGY) * (i / Math.max(count,1))
+    );
+  }
+  lastGX = e.clientX; lastGY = e.clientY;
+});
+
+function spawnGlitter(x, y) {
+  const el = document.createElement('div');
+  el.style.cssText = `
+    position:fixed;pointer-events:none;z-index:9997;
+    left:${x}px;top:${y}px;
+    transform:translate(-50%,-50%);
+    font-size:${0.5 + Math.random() * 1}rem;
+    color:${GCOLORS[Math.floor(Math.random()*GCOLORS.length)]};
+    filter:drop-shadow(0 0 4px currentColor);
+    animation:gFade ${0.4 + Math.random()*0.5}s ease forwards;
+    --dx:${(Math.random()-0.5)*40}px;
+    --dy:${Math.random()*30+8}px;
+    --rot:${Math.random()*360}deg;
+  `;
+  el.textContent = GLITTERS[Math.floor(Math.random()*GLITTERS.length)];
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 900);
+}
+
+// inject keyframes
+const style = document.createElement('style');
+style.textContent = `@keyframes gFade {
+  0% { opacity:1; transform:translate(-50%,-50%) scale(1) rotate(0deg); }
+  100% { opacity:0; transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.1) rotate(var(--rot)); }
+}`;
+document.head.appendChild(style);
+
+document.querySelectorAll('button, a').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursor.style.width = '20px';
+    cursor.style.height = '20px';
+  });
+  el.addEventListener('mouseleave', () => {
+    cursor.style.width = '12px';
+    cursor.style.height = '12px';
+  });
+});
+</script>
+</body>
+</html>
